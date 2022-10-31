@@ -1,0 +1,167 @@
+---
+title: "DEA_Zac"
+author: "Zachariah Alex"
+date: "2022-10-31"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+tab <- matrix(c("Facility 1","Facility 2","Facility 3","Facility 4","Facility 5","Facility 6",
+150,400,320,520,350,320,
+0.2,0.7,1.2,2.0,1.2,0.7,
+14000,14000,42000,28000,19000,14000,
+3500,21000,10500,42000,25000,15000), ncol=5, byrow=F)
+colnames(tab) <- c('DMU', 'Staff Hours per Day','Supplies per Day','Reimbursed Patient-Days','Privately Paid Patient-Days')
+
+tab <- as.table(tab)
+tab
+```
+
+```{r}
+
+library(Benchmarking)
+
+```
+
+```{r}
+x<-matrix(c(150,400,320,520,350,320,
+0.2,0.7,1.2,2.0,1.2,0.7),ncol=2)
+y<-matrix(c(14000,14000,42000,28000,19000,14000,
+3500,21000,10500,42000,25000,15000),ncol=2)
+
+colnames(y)<-c("Reimbursed Patient-Days","Privately Paid Patient-Days")
+colnames(x)<-c("Staff Hours per Day","Supplies per Day")
+```
+
+
+```{r}
+DEA_fdh<-dea(x,y,RTS = "fdh")
+DEA_fdh
+
+peers(DEA_fdh)
+lambda(DEA_fdh)
+
+tab_DEA_fdh <- matrix(c("Facility 1","Facility 2","Facility 3","Facility 4","Facility 5","Facility 6",
+                1,1,1,1,1,1,
+                1,1,1,1,1,1,
+                1,2,3,4,5,6
+                ),ncol=4)
+colnames(tab_DEA_fdh) <- c('DMU', 'e','lambda','peers')
+tab_DEA_fdh
+```
+
+```{r}
+DEA_crs<-dea(x,y,RTS = "crs")
+DEA_crs
+
+peers(DEA_crs)
+lambda(DEA_crs)
+
+
+tab_DEA_crs <- matrix(c("Facility 1","Facility 2","Facility 3","Facility 4","Facility 5","Facility 6",
+                1,1,1,1,0.9775,0.8675,
+                1,1,1,1,"0.2 0.08 0 0.53",1,
+                1,2,3,4,"1 2 4","1 2 4"
+                ),ncol=4)
+colnames(tab_DEA_crs) <- c('DMU', 'e','lambda','peers')
+tab_DEA_crs
+```
+
+
+```{r}
+DEA_vrs<-dea(x,y,RTS = "vrs")
+DEA_vrs
+
+peers(DEA_vrs)
+lambda(DEA_vrs)
+
+tab_DEA_crs <- matrix(c("Facility 1","Facility 2","Facility 3","Facility 4","Facility 5","Facility 6",
+                1,1,1,1,1,0.8963,
+                1,1,1,1,1,"0.401 0.342 0 0 0.256",
+                1,2,3,4,5,"1 2 5"
+                ),ncol=4)
+colnames(tab_DEA_crs) <- c('DMU', 'e','lambda','peers')
+tab_DEA_crs
+```
+```{r}
+DEA_irs<-dea(x,y,RTS = "irs")
+DEA_irs
+peers(DEA_irs)
+lambda(DEA_irs)
+
+tab_DEA_irs <- matrix(c("Facility 1","Facility 2","Facility 3","Facility 4","Facility 5","Facility 6",
+                1,1,1,1,1,0.8963,
+                1,1,1,1,1,"0.401 0.342 0 0 0.256",
+                1,2,3,4,5,"1 2 5"
+                ),ncol=4)
+colnames(tab_DEA_irs) <- c('DMU', 'e','lambda','peers')
+tab_DEA_irs
+```
+
+```{r}
+DEA_drs<-dea(x,y,RTS = "drs")
+DEA_drs
+peers(DEA_drs)
+lambda(DEA_drs)
+
+tab_DEA_drs <- matrix(c("Facility 1","Facility 2","Facility 3","Facility 4","Facility 5","Facility 6",
+                1,1,1,1,0.9775,0.8675,
+                1,1,1,1,"0.2 0.08 0 0.53","0.342 0.3949 0 0.1310",
+                1,2,3,4,"1 2 4","1 2 4"
+                ),ncol=4)
+colnames(tab_DEA_drs) <- c('DMU', 'e','lambda','peers')
+tab_DEA_drs
+```
+```{r}
+DEA_frh<-dea(x,y,RTS = "add")
+DEA_frh
+peers(DEA_frh)
+lambda(DEA_frh)
+
+tab_DEA_frh <- matrix(c("Facility 1","Facility 2","Facility 3","Facility 4","Facility 5","Facility 6",
+                1,1,1,1,1,1,
+                1,1,1,1,1,1,
+                1,2,3,4,5,6
+                ),ncol=4)
+colnames(tab_DEA_frh) <- c('DMU', 'e','lambda','peers')
+tab_DEA_frh
+```
+#INTERPRETATION OF ALL THE ABOVE RESULTS
+
+# 1 - From fdh assumption ,we can see that Facilities 1,2,3,4,5,6 are 100 % efficient
+#     The Free Disposability Hull (FDH) is a no convexity assumption. 
+#     It follows a non-parametric method to measure the efficiency of the DMUs.
+
+
+
+# 2 - From the crs assumption we made, we can see that Facilities 1,2,3,4 are 100% efficient
+#     Facility 5 and Facility 6 are only 97.75% and 86.75% efficient respectively
+#     Nearest neighbour for Facility 5 and Facility 6 are Facility 1,Facility 2 and Facility 4
+#     In this case Facilities 1, 2, 3 and 4 can be scaled up
+
+# 3 - From the vrs assumption we made, we can see that Facilities 1,2,3,4,5 are 100% efficient
+#     Facility 6 is only 89.63% efficient
+#     Nearest neighbour for Facility 6 are Facility 1,Facility 2 and Facility 5
+#     Facility 1, 2 and 5 have weights of 0.4, 0.34 and 0.26 respectively
+
+
+# 4 - From the irs assumption we made, we can see that Facilities 1,2,3,4,5 are 100% efficient
+#     Facility 6 is only 89.63% efficient
+#     Nearest neighbour for Facility 6 are Facility 1,Facility 2 and Facility 5
+
+# 5 - From the drs assumption we made, we can see that Facilities 1,2,3,4 are 100% efficient 
+#     Facility 5 and Facility 6 are only 97.75% and 86.75% efficient respectively
+#     Nearest neighbour for Facility 5 and Facility 6 are Facility 1,Facility 2 and Facility 4 
+#     Peer units are 1, 2 and 4 with weights of 0.34, 0.4 and 0.13 respectively
+#     Facilities 5 & 6 can be scaled down
+
+
+# 6 - From the frh assumption we made,we can see that Facilities 1,2,3,4,5,6 are 100 % efficient
+#     The Free Replicability Hull (FRH) is a no convexity assumption like FDH
+#     It follows a non-parametric method to measure the efficiency of the DMUs
