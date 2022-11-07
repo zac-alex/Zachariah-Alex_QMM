@@ -1,0 +1,99 @@
+---
+title: "Assignment"
+author: "Zachariah Alex"
+date: "2022-11-06"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+*The objective function is*
+$$ Max\hspace{.2cm}Z = P-6C-3D $$
+*where =P = total (discounted) profit over the life of the new products,*
+
+*C = change (in either direction) in the current level of employment,*
+
+*D = decrease (if any) in next year’s earnings from the current year’s level.*
+
+```{r}
+
+#TABLE FORMUATION 
+
+tab<- matrix(c("Total Profit", "Employment Level", "Earnings Next Year",
+                20,6,8,
+                15,4,7,
+                25,5,5,
+                "Maximize","=50",">=75"),ncol=5, byrow = F)
+                
+colnames(tab) <- c('Factor', 'Product1','Product2','Product3','Goal')
+tab
+
+
+```
+
+***1,2) Defining x1,x2,x3,y1m,y1p,y2m,y2p***
+
+
+*Let x1 ,x2 and x3 be the number of products produced for Product 1,2 and 3*
+
+*y1p = Positive deviation or per unit increase in employment level*
+
+*y1m = negative deviation or per unit decrease in employment level*
+
+*y2p = Positive deviation or per unit increase in goal regarding earnings next year*
+
+*y2m = negative deviation or per unit decrease in goal regarding earnings next year*
+
+
+
+*Emax Corpiration wants to maximize profit which is given by the equation*
+$$\text{ P = 20x1 + 15x2 +25x3}$$
+*while maintaining employment level as 50 employees and increasing next year earnings above 75 million dollars*
+
+***Formulating constraints with above conditions we get***
+
+$$\text{Employment level constraint   : y1p - y1m = 6x1 + 4x2 + 5x3 - 50    (C)}$$
+$$\text{Earnings next year constraint : y2p - y2m = 8x1 + 7x2 + 5x3 - 75    (D)}$$
+
+
+***Objective function considering all constraints is as follows :***
+
+$$\text{Maximize: 20x1 + 15x2 + 25x3 - 6y1m - 6y1p - 3y2m}$$
+
+***Constraints:***
+
+$$\text{6x1 + 4x2 + 5x3 + y1m - y1p = 50}$$
+$$\text{8x1 + 7x2 + 5x3 + y2m - y2p = 75}$$
+
+***3.Formulating and solving the linear programming model*** 
+
+```{r}
+
+library(lpSolveAPI)
+data<- read.lp("Emax Corporation.lp")
+data
+```
+# Solving
+```{r}
+solve(data)
+get.objective(data)
+get.variables(data)
+```
+***Interpretation***
+
+*The profit which is the objective function in our problem is 225 million dollars.*
+
+*The constraint values are:*
+
+*x1=0,x2=0,x3=15,y1m=0,y1p=25,y2m=0,y2p=0*
+
+*From the above values of the constraints, we can see that x1=0 and x2=0 which means increase in the number of units produced for product 1 and product 2 will not have any significant effect in total profit maximization, whereas increase in the number of units produced in product 3 by 15 can help in contributing to maximize the profit.*
+
+*The employment leel was to be maintained to 50 employees. Here, y1p=25 indicating positive deviation which means increase in employment level by 25 hundred employees. This will have an impact on decreasing the profit.*
+
+*The next year earnings can be calculating by estimating values of y2m and y2p. Here, both the values are 0, which means there is no increase or decrease in the next year earnings*
+
+
